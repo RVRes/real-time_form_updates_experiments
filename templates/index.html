@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+    <title>Form updates experiments</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+
+<form id="myForm">
+    <label for="field1">Field 1:</label>
+    <input type="text" id="field1" name="field1" readonly>
+    <label for="field2">Field 2:</label>
+    <input type="text" id="field2" name="field2" readonly>
+</form>
+
+<script>
+    $(document).ready(function () {
+        let socket = io.connect('http://' + location.hostname + ':' + location.port);
+        $('form input').click(function () {
+            let field_name = $(this).attr('name');
+            let user_id = Math.floor(Math.random() * 1000);
+            socket.emit('update_field', {'field_name': field_name, 'user_id': user_id});
+        });
+        socket.on('field_updated', function (data) {
+            $('#' + data.field_name).val('Occupied by User ' + data.user_id);
+        });
+    });
+</script>
+
+</body>
+</html>
